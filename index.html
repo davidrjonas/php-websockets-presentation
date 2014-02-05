@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+
+        <title>The Real-time Web: WebSockets, PHP, and Ratchet</title>
+
+        <meta name="description" content="Introduction to WebSockets with PHP and Ratchet">
+        <meta name="author" content="David Jonas">
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <link rel="stylesheet" href="revealjs/css/reveal.min.css">
+        <link rel="stylesheet" href="revealjs/css/theme/default.css" id="theme">
+
+        <!-- For syntax highlighting -->
+        <link rel="stylesheet" href="revealjs/lib/css/zenburn.css">
+
+        <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+        <script>
+            document.write( '<link rel="stylesheet" href="revealjs/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+        </script>
+
+        <!--[if lt IE 9]>
+        <script src="revealjs/lib/js/html5shiv.js"></script>
+        <![endif]-->
+        <style>
+            img.plain { border:0 ! important; background:none ! important; box-shadow:none !important; }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="reveal">
+
+            <!-- Any section element inside of this container is displayed as a slide -->
+            <div class="slides">
+                <section>
+                    <h2>The Real-time Web:<br> WebSockets, PHP, and Ratchet</h2>
+                    <h4>Making PHP do what it's not best at</h4>
+                    <p>
+                        <small>Created by <a href="http://splitretina.com">David Jonas</a> / <a href="http://twitter.com/splitretina">@splitretina</a></small>
+                    </p>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>What are WebSockets?</h2>
+                    </section>
+                    <section>
+                        <blockquote>&ldquo;The intent of WebSockets is to
+                        provide a relatively simple protocol that can coexist
+                        with HTTP and deployed HTTP
+                        infrastructure&rdquo;</blockquote>
+                        <p>&nbsp;</p>
+                        <p>Like TCP but designed to compliment HTTP</p>
+                        <p>Standardizes the <em>hacks</em> that have been layered on HTTP <br>(like Comet)</p>
+                    </section>
+                    <section>
+                        <h3>Created for low-latency communication</h3>
+                        <div class="fragment">
+                        <img src="this.gif" alt="^this">
+                        <p>It's not going to replace AJAX</p>
+                        </div>
+                    </section>
+                    <section>
+                        <p>Full Duplex</p>
+                        <p>Message-based</p>
+                        <p>Extensible</p>
+                    </section>
+                    <section>
+                        <h3>Use Cases</h3>
+                        <ul>
+                            <li>Multiplayer Games</li>
+                            <li>Coordinated Interactive experiments</li>
+                            <li>Chat / Presence</li>
+                            <li>Realtime Data Tickers and Charts</li>
+                            <li>Data interactions, such as distributed resource locking</li>
+                            <li>Nearly anything that would normally be done over TCP <small>(besides streams)</small></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Browser Support</h2>
+                        <small>It is well supported</small>
+                        <img src="browser-support.png" alt="Browser Support"/>
+                    </section>
+                    <section>
+                        <h3>What does it look like?</h3>
+                        <img alt="what does it look like?" src="what-does-it-look-like.png" class="plain">
+                    </section>
+                    <section>
+                        <h3>But you don't need to know that to use it</h3>
+                        <p>Enter Ratchet and Javascript</p>
+                        <small>SockJS, Socket.IO or plain WebSocket, we're talking about PHP here</small>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>What is Ratchet?</h2>
+                        <img src="ratchet-autobot.png" alt="Ratchet the Autobot" class="plain" style="">
+                        <img src="ratchet-miley.jpg" alt="Miley is ratchet" class="plain" style="margin: 15px 72px;">
+                        <img src="websockets_logo.png" alt="websockets logo" class="plain" style="">
+                    </section>
+                    <section>
+                        <p style="font-size:larger; font-weight:bold;">Ratchet is a WebSocket server built on ReactPHP</p>
+                        <div class="fragment">
+                            <p>But what is ReactPHP?</p>
+                            <p>&ldquo;Event-driven, non-blocking I/O with PHP.&rdquo;</p>
+                            <p>Like EventMachine (Ruby), Twisted (Python) and Node.js (V8)</p>
+                        </div>
+                    </section>
+                    <section>
+                        <h3>But wait!</h3>
+                        <p>Node.js and friends are <em>daemons</em>.</p>
+                        <p><b>PHP doesn't do that!</b></p>
+                        <img src="i-can-count.jpg" alt="I can count to potato" class="plain"/>
+                    </section>
+                    <section>
+                        <p>ReactPHP and Ratchet makes it happen.</p>
+                        <pre><code data-trim>
+&lt;?php 
+use Ratchet\MessageComponentInterface; 
+use Ratchet\ConnectionInterface; 
+
+class Chat implements MessageComponentInterface { 
+    public function onOpen(ConnectionInterface $conn) { 
+    } 
+
+    public function onMessage(ConnectionInterface $from, $msg) { 
+    } 
+
+    public function onClose(ConnectionInterface $conn) { 
+    } 
+
+    public function onError(ConnectionInterface $conn, \Exception $e) { 
+    } 
+}
+
+                        </code></pre>
+                    </section>
+                    <section>
+                        <h2>Best Practices</h2>
+                        <p>PHP Environment: libevent, ulimit, no xdebug</p>
+                        <p>Use port 80, 443 for best compatibility</p>
+                        <p>Run on subdomain: ws.example.com</p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Okay, so show me how to do something.</h2>
+                    </section>
+                    <section>
+                    <code>composer require cboden/Ratchet:dev-master</code>
+                    <small>demo time.</small>
+                    </section>
+                </section>
+
+                <section>
+                    <h2>Clients</h2>
+                    <p>Reconnecting WebSocket</p>
+                    <p>SockJS</p>
+                    <p>Socket.IO</p>
+                </section>
+
+                <section>
+                    <h2>Security</h2>
+                    <div class="fragment">
+                        <p>Suseptible to XSS but does use CORS</p>
+                        <p>Validate client input as normal (untrusted)</p>
+                        <p>Validate server responses as if dangerous: Send data not code and JSON.parse()</p>
+                        <p>Connections can easily be initiated non-browsers</p>
+                    </div>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Problems</h2>
+                    </section>
+                    <section>
+                        <h2>Workflow</h2>
+                        <p>Red, Restart, Refactor</p>
+                    </section>
+                    <section>
+                        <h2>Deployment</h2>
+                        <p>Long running; not stateless like traditional php</p>
+                        <p>When code changes server needs be restarted</p>
+                        <p>We are not sysadmins</p>
+                        <img src="yanss.jpg" alt="You are not so smart"/>
+                        <p>Use a daemon manager and automate restarting</p>
+                        <p>Rocketeer or Capistrano will be your friend</p>
+                    </section>
+                </section>
+
+                <section>
+                    <section>
+                        <h2>Advanced Topics</h2>
+                    </section>
+                    <section>
+                        <h2>WAMP</h2>
+                        <blockquote>&ldquo;WAMP is an open WebSocket subprotocol that provides two asynchronous messaging patterns: RPC and PubSub&rdquo;</blockquote>
+                        <p>Ratchet Component</p>
+                        <pre><code data-trim>
+public function onCall(ConnectionInterface $conn, string $id, Topic $topic, array $params)
+public function onSubscribe(ConnectionInterface $conn, Topic $topic)
+public function onUnsubscribe(ConnectionInterface $conn, Topic $topic)
+public function onPublish(ConnectionInterface $conn, Topic $topic, string $event)
+                        </code></pre>
+                        <p>Ratchet Connection</p>
+                        <pre><code data-trim>
+public function event (string $topic, string $msg) - Publish/Send data to a client that has subscribed to a topic
+public function callResult (string $id, array $data) - A response to a client Call. Make sure to pass the corresponding $id from the onCall event
+public function callError (string $id, string $topic, string $desc = '', string $details = null) 
+                        </code></pre>
+
+                        <p>Client: Autobahnjs</p>
+                    </section>
+                    <section>
+                        <h2>Servers and Load Balancing</h2>
+                        <p>Reverse proxy (HAProxy or Varnish)</p>
+                        <p>nginx &gt; 1.3.13: http://nginx.org/en/docs/http/websocket.html</p>
+                        <p>Apache 2.4 mod_proxy_wstunnel: http://httpd.apache.org/docs/2.4/mod/mod_proxy_wstunnel.html</p>
+                    </section>
+                </section>
+                <section>
+                    <h2>Recap</h2>
+                    <p class="fragment">WebSockets are for low-latency communication</p>
+                    <p class="fragment">Full duplex and Extensible</p>
+                    <p class="fragment">Well supported in modern browsers</p>
+                    <p class="fragment">Different workflow than traditional PHP</p>
+                </section>
+                <section>
+                    <h1>Thanks!</h1>
+                    <p>Contact me any time</p>
+                    <h2>David Jonas</h2>
+                    <p>david.jonas@gmail.com</p>
+                    <p>http://github.com/davidrjonas</p>
+                    <small><a href="http://twitter.com/splitretina">@splitretina</a></small>
+                </section>
+            </div>
+
+        </div>
+
+        <script src="revealjs/lib/js/head.min.js"></script>
+        <script src="revealjs/js/reveal.min.js"></script>
+
+        <script>
+
+            // Full list of configuration options available here:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+
+                theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+                //theme: "default",
+                //transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+                transition: "linear",
+
+                // Optional libraries used to extend on reveal.js
+                dependencies: [
+                    { src: 'revealjs/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'revealjs/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'revealjs/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                    { src: 'revealjs/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                    { src: 'revealjs/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+                    { src: 'revealjs/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+                ]
+            });
+
+        </script>
+
+    </body>
+</html>
